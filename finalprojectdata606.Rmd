@@ -1,0 +1,126 @@
+---
+title: "Final Project Data 606"
+author: "Jaya Veluri"
+date: "12/7/2021"
+output: pdf_document
+always_allow_html: true
+
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+## INTRODUCTION
+Car insurance premiums are varied among different states in America. Why are some states having higher premiums than others? In this project, I wanted to study the association between driver records and car insurance premiums. It’s good to know the percentage of bad drivers and your potential car insurance premium before you are planning to move to another state.
+
+
+```{r}
+
+
+```
+## Data
+
+The data is collected in 2017 from National Highway Traffic Safety Administration and National Association of Insurance Commissioners by FiveThirtyEight.
+
+There are 51 cases/observations in the given data set(including District of Columbia). Each case represents a state in the United States. I will be studying the Insurance Loss and Insurance Premium variables. 
+
+Insurance Loss is the independent variable that is quantitative and Insurance Premium is the response variable that is also quantitative.
+
+This is an observational study. I will draw my conclusions based on analyzing the existing data.
+
+The population of interest is anyone who drives in the United States, hence this study can be generalized to the general population.
+
+The data may or may not be used to establish causal links between Insurance Loss and Insurance Premiums(even if there is a relationship between the two), since there could be more factors taken into consideration when the premiums were being priced.
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(DT)
+bad_drivers <- 
+read.csv("https://raw.githubusercontent.com/fivethirtyeight/data/master/bad-drivers/bad-drivers.csv")
+
+head(bad_drivers)
+
+names(bad_drivers) <- c("State", "Drivers.Collisions", 
+"Drivers.Perc.Speeding", "Drivers.Perc.Alcohol", 
+"Drivers.Perc.Not.Distracted", "Drivers.Perc.No.Pre.Accident", 
+"Drivers.Insurance.Premium", "Drivers.Insurance.Loss")
+
+```
+
+## Data Analysis
+```{r}
+datatable(bad_drivers)
+summary(bad_drivers)
+
+```
+### Summary statistics for characteristics of bad drivers
+```{r}
+summary(bad_drivers)
+```
+### Barplot to see car insurance premiums in all the states ranking from highest to lowest.
+```{r}
+bad_drivers %>% ggplot(aes(x=reorder(State, -Drivers.Insurance.Premium), 
+  y=Drivers.Insurance.Premium, color=Drivers.Insurance.Premium)) +
+  geom_bar(stat = "identity") +
+  guides(fill = FALSE) +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+  xlab("States") + ylab("Car Insurance Premium") +
+  ggtitle("Car Insurance Premium by States")
+```
+### Barplot to see insurance losses in all the states ranking from highest to lowest.
+```{r}
+bad_drivers %>% ggplot(aes(x=reorder(State, -Drivers.Insurance.Loss), 
+ y=Drivers.Insurance.Loss, color=Drivers.Insurance.Loss)) +
+  geom_bar(stat = "identity") +
+  guides(fill = FALSE) +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+  xlab("States") + ylab("Insurance Losses") +
+  ggtitle("Insurance Losses by States")
+```
+### Relationship between insurance losses and premiums from a scatterplot.
+```{r}
+bad_drivers %>% ggplot(aes(x=Drivers.Insurance.Loss, 
+    y=Drivers.Insurance.Premium, color=Drivers.Insurance.Premium, 
+    size=Drivers.Insurance.Loss)) +
+  geom_point() +
+  guides(fill = FALSE) +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+  xlab("Insurance Losses") + ylab("Car Insurance Premium") +
+  ggtitle("Car Insurance Premium by Insurance Lossses")
+
+```
+There is an upward movement towards the upper right corner which indicates higher losses lead to higher premium
+```{r}
+
+```
+## Inference
+```{r}
+hist(bad_drivers$Drivers.Insurance.Premium)
+```
+## Running a linear regression model:
+```{r}
+m_loss <- lm(Drivers.Insurance.Premium ~ Drivers.Insurance.Loss, data = bad_drivers)
+summary(m_loss)
+```
+The linear regression model suggests that the formula used to predict the insurance premium by loss is:
+premium = 285.33 + 4.47 * loss
+```{r}
+
+```
+## Conclusion
+From this study, I would conclude that there appears to be association between car insurance losses and insurance premiums. At this point we can only be certain that Idaho is the safest state which also has the lowest car insurance premium and New Jersey has the highest car Insurance Premium, (even though it ranks 6th in insurance losses). So in some states, additional to insurance losses  there are other factors which effects car Insurance Premium.
+
+```{r}
+
+```
+## Extending The Study
+
+1) Is there a linear relationship between insurance premiums and percent of drivers caught drinking.
+
+2) Is there a linear relationship between insurance premiums and percent of drivers caught speeding.
+
+3) Which Region/state has the worst drivers and best drivers
+ 
